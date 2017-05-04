@@ -222,8 +222,8 @@ def showBoxPlots(type1, type2, title=None, proteinName=None):
 		Params:
 			type1       (dict) : dictionary containing points of one class, keys can be arbitrary
 			type2       (dict) : dictionary containing points of second class, keys can be arbitary
-			title       (str)  : title of the box plot
-			proteinName (str)  : only show box plot of one protein, must be an acceptable protein
+			title        (str) : title of the box plot
+			proteinName  (str) : only show box plot of one protein, must be an acceptable protein
 	"""
 	if proteinName:
 		if proteinName not in ["bl", "v10", "v12", "v4", "v6", "v8"]:
