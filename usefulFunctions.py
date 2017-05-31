@@ -477,7 +477,7 @@ def createBinaryDataSet(type1, type2, fill=False, k=1, fix=False, morePoints=Fal
 	return (xData, labels)
 
 
-def testBinaryClassifier(clf, classZeroData, classOneData, testSize, fill=True, k=1, fix=True, morePoints=False, proteins=None):
+def testBinaryClassifier(clf, classZeroData, classOneData, testSize, n=10, fill=True, k=1, fix=True, morePoints=False, proteins=None):
 	"""
 		Displays to the user useful information about the preformance of a binary classifier
 
@@ -486,6 +486,7 @@ def testBinaryClassifier(clf, classZeroData, classOneData, testSize, fill=True, 
 			classZeroData (dict) : key - id, value - dictionary of features
 			classOneData  (dict) : key - id, value - dictionary of features
 			testSize     (float) : percentage of data that should be kept for testing
+			n              (int) : the number of trials to run
 			fill          (bool) : whether to fill in missing entries in data points
 			k              (int) : threshold for how many missing entries can be filled
 			fix           (bool) : whether to fix likely fat finger errors
@@ -494,29 +495,27 @@ def testBinaryClassifier(clf, classZeroData, classOneData, testSize, fill=True, 
 	"""
 
 	scores=[]
-	maxScore=0
-	maxROC = {}
-	percentages=[]
-	trainingDataPoints = 0
-	testingDataPoints = 0
-	for i in range(10):
+	medianScore = 0
+	rocs = {}
+	trainingTestingDataPoints = {}
+	for i in range(n):
 		data = createBinaryDataSet(classZeroData, classOneData, fill=fill, k=k, fix=fix, morePoints=morePoints, proteins=proteins)
 		X_train, X_test, y_train, y_test = train_test_split(data[0], data[1], test_size=testSize, random_state=1)
 		clf.fit(X_train, y_train)
 		score = clf.score(X_test, y_test)
 		scores.append(score)
-		
-		if score > maxScore:
-			maxScore = score
-			maxROC[0] = roc_curve(y_test, clf.predict_proba(X_test)[:,1])
-			maxROC[1] = auc(maxROC[0][0], maxROC[0][1])
-			trainingDataPoints = len(X_train)
-			testingDataPoints = len(X_test)
-		
+		rocCurve = roc_curve(y_test, clf.predict_proba(X_test)[:,1])
+		rocs[score] = (rocCurve, auc(rocCurve[0], rocCurve[1]))
+		trainingTestingDataPoints[score] = (len(X_train), len(X_test))
+	
+	scores.sort()
 
-	print "Number of Training Data Points: " + str(trainingDataPoints)
-	print "Number of Testing Data Points: " + str(testingDataPoints)
-	print "Accuracy scores: " +str(scores)
+	medianScore = scores[len(scores)/2]
+
+	print "Number of Training Data Points: " + str(trainingTestingDataPoints[medianScore][0])
+	print "Number of Testing Data Points: " + str(trainingTestingDataPoints[medianScore][1])
+	print "Accuracy scores: " + str(scores)
 	print "Mean Accuracy: " + str(computeMean(scores))
-	print "ROC Graph for best trial"
-	createROCGraph(maxROC[0][0], maxROC[0][1], maxROC[1])
+	print "Median Accuracy: " + str(medianScore)
+	print "ROC Graph for Median trial"
+	createROCGraph(rocs[medianScore][0][0], rocs[medianScore][0][1], rocs[medianScore][1])
