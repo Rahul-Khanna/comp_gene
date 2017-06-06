@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from numpy.random import normal
+from numpy import arange
 import math
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
@@ -65,6 +66,33 @@ def createBoxPlot(array, labels, title, yTitle=None, outliers=False):
 	ax.set_xticklabels(labels)
 	plt.show()
 
+def createLinePlotsOnDifferentPlots(arrays, labels, colors, titles=None, yTitles=None):
+	fig = plt.figure(figsize=(12.5, 15))
+	control = fig.add_subplot(2,1,1)
+	sick = fig.add_subplot(2,1,2)
+	control.get_xaxis().tick_bottom()
+	control.get_yaxis().tick_left()
+	sick.get_xaxis().tick_bottom()
+	sick.get_yaxis().tick_left()
+	
+	for i in range(len(arrays)):
+		array = arrays[i]
+		if labels[i] == 0:
+			control.plot(arange(len(array)), array, colors[labels[i]])
+		else:
+			sick.plot(arange(len(array)), array, colors[labels[i]])
+	plt.show()
+
+def createLinePlotsOnSamePlot(arrays, labels, colors, title=None, yTitle=None):
+	fig = plt.figure(figsize=(12.5, 15))
+	ax = fig.add_subplot(1,1,1)
+	ax.get_xaxis().tick_bottom()
+	ax.get_yaxis().tick_left()
+	
+	for i in range(len(arrays)):
+		array = arrays[i]
+		ax.plot(arange(len(array)), array, colors[labels[i]])
+	plt.show()
 
 def checkForNull(entry):
 	"""
