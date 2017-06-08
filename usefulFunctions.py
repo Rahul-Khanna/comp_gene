@@ -74,7 +74,6 @@ def createLinePlotsOnDifferentPlots(arrays, labels, colors, titles=None, yTitles
 	control.get_yaxis().tick_left()
 	sick.get_xaxis().tick_bottom()
 	sick.get_yaxis().tick_left()
-	
 	for i in range(len(arrays)):
 		array = arrays[i]
 		if labels[i] == 0:
@@ -88,7 +87,8 @@ def createLinePlotsOnSamePlot(arrays, labels, colors, title=None, yTitle=None):
 	ax = fig.add_subplot(1,1,1)
 	ax.get_xaxis().tick_bottom()
 	ax.get_yaxis().tick_left()
-	
+	if title:
+		ax.set_title(title)
 	for i in range(len(arrays)):
 		array = arrays[i]
 		ax.plot(arange(len(array)), array, colors[labels[i]])
