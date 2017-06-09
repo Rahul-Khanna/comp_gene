@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 from numpy.random import normal
 from numpy import arange
 import math
@@ -78,8 +79,10 @@ def createLinePlotsOnDifferentPlots(arrays, labels, colors, titles=None, yTitles
 		array = arrays[i]
 		if labels[i] == 0:
 			control.plot(arange(len(array)), array, colors[labels[i]])
+			# control.set_title(titles[0])
 		else:
 			sick.plot(arange(len(array)), array, colors[labels[i]])
+			# sick.set_title(titles[1])
 	plt.show()
 
 def createLinePlotsOnSamePlot(arrays, labels, colors, title=None, yTitle=None):
