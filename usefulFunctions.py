@@ -8,6 +8,9 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_curve
 from sklearn.metrics import auc
+import time
+import pygal
+from pygal.style import Style
 
 
 def computeMean(array):
@@ -96,6 +99,22 @@ def createLinePlotsOnSamePlot(arrays, labels, colors, title=None, yTitle=None):
 		array = arrays[i]
 		ax.plot(arange(len(array)), array, colors[labels[i]])
 	plt.show()
+
+def createPyGalLinePlots(arrays, y_labels, x_labels, types, colors, file_name, title=None, yTitle=None, maxi=100):
+	custom_style = Style(colors=colors)
+	line_chart = pygal.Line(style=custom_style, range=(0,maxi), secondary_range=(0,maxi))
+	if title:
+		line_chart.title = title.decode('utf-8')
+	else:
+		line_chart.title = "temp".decode('utf-8')
+	line_chart.x_labels = x_labels
+	for i in range(len(arrays)):
+		if types[i] == 0:
+			line_chart.add(str(y_labels[i]).decode('utf-8'), arrays[i])
+		else:
+			line_chart.add(str(y_labels[i]).decode('utf-8'), arrays[i], secondary=True)
+
+	line_chart.render_to_file(filename=file_name)
 
 def checkForNull(entry):
 	"""
