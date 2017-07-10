@@ -1,17 +1,23 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+from numpy import newaxis
 from numpy.random import normal
 from numpy import arange
+from numpy import set_printoptions
 import math
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
 from sklearn.metrics import roc_curve
 from sklearn.metrics import auc
+from scipy.stats import ttest_ind
+import itertools
 import time
 import pygal
 from pygal.style import Style
 
+PROTEINS = ["protein_BL", "protein_V4","protein_V6", "protein_V8", "protein_V10", "protein_V12"]
 
 def computeMean(array):
 	"""
@@ -29,6 +35,22 @@ def computeMean(array):
 
 	return s/float(len(array))
 
+def computeStdev(array):
+
+	mean = computeMean(array)
+	s = 0
+	for entry in array:
+		s+=((entry-mean)**2)
+
+	s = math.sqrt(s/float(len(array)-1))
+
+	return s
+
+def computeWelchTest(array1, array2):
+
+	return ttest_ind(array1, array2, equal_var=False)
+
+
 def percentageOfClassInData(labels, cl):
 	"""
 		Calculates the percentage of lables that are of a particular class
@@ -44,7 +66,7 @@ def percentageOfClassInData(labels, cl):
 	for entry in labels:
 		if entry == cl:
 			count+=1
-	return count/float(len(array))
+	return format(count/float(len(labels)), '.3f')
 
 def createBoxPlot(array, labels, title, yTitle=None, outliers=False):
 	"""
@@ -55,22 +77,38 @@ def createBoxPlot(array, labels, title, yTitle=None, outliers=False):
 								   a matrix, where each row represents a distribution of numbers to be plotted
 			labels         (arr) : labels to put on the x-axis to indicate what the distribution is of
 			title          (str) : title of box plot
-			yTitle    (str|None) : title to be placed on the y-axis
+			yTitle    	   (str) : title to be placed on the y-axis
 			outliers      (bool) : indicates whether to show outliers in the box plot
 	"""
 	fig=plt.figure(figsize=(12.5, 10.0))
 	ax=fig.add_subplot(111)
 	ax.get_xaxis().tick_bottom()
 	ax.get_yaxis().tick_left()
+
 	if title:
 		ax.set_title(title)
 	if yTitle:
 		ax.set_ylabel(yTitle)
+
 	bp=ax.boxplot(array,showfliers=outliers)
 	ax.set_xticklabels(labels)
 	plt.show()
 
-def createLinePlotsOnDifferentPlots(arrays, labels, colors, titles=None, yTitles=None):
+def createLinePlotsOfBinaryDataOnDifferentPlots(arrays, labels, colors, titles=None, yTitles=None):
+	"""
+		Creates line plots for each timeseries passed in 
+		Splits the data into two different plots by the label associated with the timeserie
+
+		Params:
+			arrays (arr|arr[arr]) : two forms are acceptable, either just one array to be plotted or
+									a matrix, where each row represents a timeserie of numbers to be plotted
+			labels          (arr) : for each timeserie passed in there must be a corresponding label indicating
+									the class of the timeserie
+			colors          (arr) : colors to use for the two different plots, color at index i - color to use for label i
+			titles          (str) : titles to use on top of each plot, title at index i - title to use for label i
+			yTitles         (str) : titles to be placed on the y-axis of each plot, yTitle at index i - title to use for label i
+	"""
+
 	fig = plt.figure(figsize=(12.5, 15))
 	control = fig.add_subplot(2,1,1)
 	sick = fig.add_subplot(2,1,2)
@@ -78,31 +116,69 @@ def createLinePlotsOnDifferentPlots(arrays, labels, colors, titles=None, yTitles
 	control.get_yaxis().tick_left()
 	sick.get_xaxis().tick_bottom()
 	sick.get_yaxis().tick_left()
+
+	if titles:
+		control.set_title(titles[0])
+		sick.set_title(titles[1])
+	if yTitles:
+		control.set_ylabel(yTitles[0])
+		sick.set_ylabel(yTitles[1])
+
 	for i in range(len(arrays)):
 		array = arrays[i]
 		if labels[i] == 0:
 			control.plot(arange(len(array)), array, colors[labels[i]])
-			# control.set_title(titles[0])
 		else:
 			sick.plot(arange(len(array)), array, colors[labels[i]])
-			# sick.set_title(titles[1])
 	plt.show()
 
 def createLinePlotsOnSamePlot(arrays, labels, colors, title=None, yTitle=None):
+	"""
+		Creates line plots for each timeseries passed in 
+
+		Params:
+			arrays (arr|arr[arr]) : two forms are acceptable, either just one array to be plotted or
+									a matrix, where each row represents a timeserie of numbers to be plotted
+			labels          (arr) : for each timeserie passed in there must be a corresponding label indicating
+									the class of the timeserie
+			colors          (arr) : colors to use for the two different plots, color at index i - color to use for label i
+			title           (str) : title of line plot
+			yTitle          (str) : title to be placed on the y-axis
+	"""
 	fig = plt.figure(figsize=(12.5, 15))
 	ax = fig.add_subplot(1,1,1)
 	ax.get_xaxis().tick_bottom()
 	ax.get_yaxis().tick_left()
+
 	if title:
 		ax.set_title(title)
+	if yTitle:
+		ax.set_ylabel(yTitle)
+
 	for i in range(len(arrays)):
 		array = arrays[i]
 		ax.plot(arange(len(array)), array, colors[labels[i]])
 	plt.show()
 
-def createPyGalLinePlots(arrays, y_labels, x_labels, types, colors, file_name, title=None, yTitle=None, maxi=100):
+def createPyGalLinePlotsForBinaryData(arrays, y_labels, x_labels, types, colors, file_name, title=None, yTitle=None, min_y=0, max_y=100):
+	"""
+		arrays (arr|arr[arr]) : two forms are acceptable, either just one array to be plotted or
+								a matrix, where each row represents a timeserie of numbers to be plotted
+		y_labels        (arr) : for each timeserie passed in there must be a corresponding label indicating
+								the label to indentify that timeserie
+		x_labels        (arr) : labels corresponding to the various moments in time for each measurement
+		types           (arr) : for each timeserie passed in there must be a corresponding label indicating
+								the class of the timeserie
+		colors          (arr) : for each timeserie passed in there must be a corresponding color to use to plot
+								the timeserie
+		file_name       (str) : name of the file to save the created plot to
+		title           (str) : title of line plot
+		yTitle          (str) : title to be placed on the y-axis
+		min_y           (int) : minimum value to use for range of y-axis
+		max_y           (int) : maximum value to use for range of y-axis
+	"""
 	custom_style = Style(colors=colors)
-	line_chart = pygal.Line(style=custom_style, range=(0,maxi), secondary_range=(0,maxi))
+	line_chart = pygal.Line(style=custom_style, range=(min_y, max_y), secondary_range=(min_y, max_y))
 	if title:
 		line_chart.title = title.decode('utf-8')
 	else:
@@ -115,6 +191,43 @@ def createPyGalLinePlots(arrays, y_labels, x_labels, types, colors, file_name, t
 			line_chart.add(str(y_labels[i]).decode('utf-8'), arrays[i], secondary=True)
 
 	line_chart.render_to_file(filename=file_name)
+
+
+def plot_confusion_matrix(cm, classes,
+						  normalize=True,
+						  title='Confusion matrix',
+						  cmap=plt.cm.Blues):
+	"""
+	This function prints and plots the confusion matrix.
+	Normalization can be applied by setting `normalize=True`.
+	"""
+	plt.figure()
+	set_printoptions(precision=2)
+	plt.imshow(cm, interpolation='nearest', cmap=cmap)
+	plt.title(title)
+	plt.colorbar()
+	tick_marks = arange(len(classes))
+	plt.xticks(tick_marks, classes, rotation=45)
+	plt.yticks(tick_marks, classes)
+
+	if normalize:
+		cm = cm.astype('float') / cm.sum(axis=1)[:, newaxis]
+		print("Normalized confusion matrix")
+	else:
+		print('Confusion matrix, without normalization')
+
+	print(cm)
+
+	thresh = cm.max() / 2.
+	for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+		plt.text(j, i, cm[i, j],
+				 horizontalalignment="center",
+				 color="white" if cm[i, j] > thresh else "black")
+
+	plt.tight_layout()
+	plt.ylabel('True label')
+	plt.xlabel('Predicted label')
+	plt.show()
 
 def checkForNull(entry):
 	"""
@@ -320,7 +433,7 @@ def createROCGraph(fpr, tpr, auc):
 	plt.show()
 
 
-def fixPoints(xData, labels=None, stats=None, upper=100):
+def fixPoints(xData, labels=None, stats=None, differ=True, upper=100):
 	"""
 		Fixes fat finger errors by multiplying the value by 100 or 10 depending if the result < upperBound or not
 
@@ -338,7 +451,10 @@ def fixPoints(xData, labels=None, stats=None, upper=100):
 			# not a valid entry but also not null
 			if not checkForValid(xData[i][j]) and not checkForNull(xData[i][j]):
 				if stats:
-					upperBound = stats[j][labels[i]][0]+(3*stats[j][labels[i]][1])
+					if differ:
+						upperBound = stats[j][labels[i]][0]+(3*stats[j][labels[i]][1])
+					else:
+						upperBound = stats[j][0]+(3*stats[j][1])
 				else:
 					upperBound = upper
 				if xData[i][j] > 0:
@@ -357,7 +473,7 @@ def fixPoints(xData, labels=None, stats=None, upper=100):
 
 
 
-def cleanAndFill(xData, labels, k, fix=False, morePoints=False):
+def cleanAndFill(xData, labels, k, fix=False, morePoints=False, differ=True):
 	"""
 		Function that computes mean and std for each feature of each class (0 or 1) and fills in missing
 		entries in data points who are missing k or less entries
@@ -375,6 +491,7 @@ def cleanAndFill(xData, labels, k, fix=False, morePoints=False):
 			k           (int) : threshold for how many missing entries there can be in a data point
 			fix        (bool) : fix entries that are most likely fat finger errors (entries <1)
 			morePoints (bool) : relaxes condition of needing 30 actual data points to fill in data
+			differ     (bool) : should the function differentiate between class labels when calculating stats
 		
 		Returns:
 			tuple : first entry is a matrix containing the x values, second entry are the corresponding labels   
@@ -383,51 +500,83 @@ def cleanAndFill(xData, labels, k, fix=False, morePoints=False):
 	# computing mean and std for each feature for each class
 	badIndicies = []
 	stats = {}
-	for i in range(len(xData[0])):
-		stats[i] = {0 : [0.0,0.0,0.0], 1: [0.0,0.0,0.0]}
+	fillCounts = {}
+	if differ:
+		for i in range(len(xData[0])):
+			stats[i] = {0 : [0.0,0.0,0.0], 1: [0.0,0.0,0.0]}
+			fillCounts[i] = {0 : 0, 1: 0}
+	else:
+		for i in range(len(xData[0])):
+			stats[i] = [0.0,0.0,0.0]
+			fillCounts[i] = 0
 
 	for i in range(len(xData)):
 		for j in range(len(xData[i])):
 			if checkForValid(xData[i][j]):
-				stats[j][labels[i]][0]+=xData[i][j]
-				stats[j][labels[i]][2]+=1
+				if differ:
+					stats[j][labels[i]][0]+=xData[i][j]
+					stats[j][labels[i]][2]+=1
+				else:
+					stats[j][0]+=xData[i][j]
+					stats[j][2]+=1
 	
 	for key in stats:
-		stats[key][0][0] = stats[key][0][0]/stats[key][0][2]
-		stats[key][1][0] = stats[key][1][0]/stats[key][1][2]
+		if differ:
+			stats[key][0][0] = stats[key][0][0]/stats[key][0][2]
+			stats[key][1][0] = stats[key][1][0]/stats[key][1][2]
+		else:
+			stats[key][0] = stats[key][0]/stats[key][2]
 	
 	for i in range(len(xData)):
 		for j in range(len(xData[i])):
 			if checkForValid(xData[i][j]):
-				stats[j][labels[i]][1]+=((xData[i][j] - stats[j][labels[i]][0])**2)
+				if differ:
+					stats[j][labels[i]][1]+=((xData[i][j] - stats[j][labels[i]][0])**2)
+				else:
+					stats[j][1]+=((xData[i][j] - stats[j][0])**2)
 	
 	for key in stats:
-		stats[key][0][1] = math.sqrt(stats[key][0][1]/(stats[key][0][2]-1))
-		stats[key][1][1] = math.sqrt(stats[key][0][1]/(stats[key][1][2]-1))
+		if differ:
+			stats[key][0][1] = math.sqrt(stats[key][0][1]/(stats[key][0][2]-1))
+			stats[key][1][1] = math.sqrt(stats[key][0][1]/(stats[key][1][2]-1))
+		else:
+			stats[key][1]= math.sqrt(stats[key][1]/(stats[key][2]-1))
 
 	# fix data points
 	if fix:
-		xData = fixPoints(xData, labels, stats)
+		xData = fixPoints(xData, labels, stats, differ)
 	
 	notEnough = 0
 	# filling data points that have lower than k bad values
 	for i in range(len(xData)):
-		potentialIndxs = []
+		potentialIndexs = []
 		for j in range(len(xData[i])):
 			if not checkForValid(xData[i][j]):
-				potentialIndxs.append(j)
+				potentialIndexs.append(j)
 		
-		if len(potentialIndxs) <= k:
-			for j in potentialIndxs:
+		if len(potentialIndexs) <= k:
+			for j in potentialIndexs:
 				# if null fill it in
 				filled = False
 				if checkForNull(xData[i][j]):
-					if stats[j][labels[i]][2] >= 30:
-						xData[i][j] = normal(stats[j][labels[i]][0], stats[j][labels[i]][1])
-						filled = True
-					elif morePoints:
-						xData[i][j] = normal(stats[j][labels[i]][0], stats[j][labels[i]][1])
-						filled = True
+					if differ:
+						if stats[j][labels[i]][2] >= 30:
+							xData[i][j] = normal(stats[j][labels[i]][0], stats[j][labels[i]][1])
+							fillCounts[j][labels[i]]+=1
+							filled = True
+						elif morePoints:
+							xData[i][j] = normal(stats[j][labels[i]][0], stats[j][labels[i]][1])
+							fillCounts[j][labels[i]]+=1
+							filled = True
+					else:
+						if stats[j][2] >= 30:
+							xData[i][j] = normal(stats[j][0], stats[j][1])
+							fillCounts[j]+=1
+							filled = True
+						elif morePoints:
+							xData[i][j] = normal(stats[j][0], stats[j][1])
+							fillCounts[j]+=1
+							filled = True
 				# if not null (corrupted entry) or don't have enough confidence in mean and std, remove from the dataset
 				if not filled:
 					notEnough+=1
@@ -446,10 +595,10 @@ def cleanAndFill(xData, labels, k, fix=False, morePoints=False):
 	# print "Number of bad points: " + str(len(badIndicies))
 	# print "Number of times there wasn't enough data to look at to trust normal approx: " + str(notEnough)
 	# print "Number of data points: " + str(len(xData))
-	return (xData, labels)
+	return (xData, labels, fillCounts)
 
 
-def createBinaryDataSet(type1, type2, fill=False, k=1, fix=False, morePoints=False, proteins=None):
+def createBinaryDataSet(type1, type2, fill=False, k=1, fix=False, morePoints=False, differ=True, proteins=None):
 	"""
 		Function that takes in data from two different pools, type1 and type2, and creates (vector, label) pairs
 		
@@ -465,6 +614,7 @@ def createBinaryDataSet(type1, type2, fill=False, k=1, fix=False, morePoints=Fal
 			k           (int) : threshold for how many missing entries there can be in a data point
 			fix        (bool) : whether to fix likely fat finger errors
 			morePoints (bool) : relaxes condition of needing 30 actual data points to fill in data
+			differ     (bool) : should the function differentiate between class labels when calculating stats
 			proteins    (arr) : array of protein names to consider when building vectors for each data point
 		
 		Returns:
@@ -473,8 +623,7 @@ def createBinaryDataSet(type1, type2, fill=False, k=1, fix=False, morePoints=Fal
 	if proteins:
 		acceptableProteins = proteins
 	else:
-		acceptableProteins = ["protein_BL", "protein_V4","protein_V6", "protein_V8", 
-								 "protein_V10", "protein_V12"]
+		acceptableProteins = PROTEINS
 	
 	xData = []
 	labels = []
@@ -516,18 +665,18 @@ def createBinaryDataSet(type1, type2, fill=False, k=1, fix=False, morePoints=Fal
 			labels.append(1)
 	
 	if fill:
-		return cleanAndFill(xData, labels, k, fix, morePoints)
+		return cleanAndFill(xData, labels, k, fix, morePoints, differ)
 	
 	if len(xData) != len(labels):
 		raise ValueError("Data points and labels don't match up!")
 	
-	print "Number of data points: " + str(len(xData))
-	print "Number of bad data points of type1: " + str(count1)
-	print "Number of bad data points of type2: " + str(count2)
+	# print "Number of data points: " + str(len(xData))
+	# print "Number of bad data points of type1: " + str(count1)
+	# print "Number of bad data points of type2: " + str(count2)
 	return (xData, labels)
 
 
-def testBinaryClassifier(clf, classZeroData, classOneData, testSize, n=10, fill=True, k=1, fix=True, morePoints=False, proteins=None):
+def testBinaryClassifier(clf, classZeroData, classOneData, testSize, n=10, fill=True, k=1, fix=True, morePoints=False,  differ=True, proteins=None):
 	"""
 		Displays to the user useful information about the preformance of a binary classifier
 
@@ -541,31 +690,83 @@ def testBinaryClassifier(clf, classZeroData, classOneData, testSize, n=10, fill=
 			k              (int) : threshold for how many missing entries can be filled
 			fix           (bool) : whether to fix likely fat finger errors
 			morePoints    (bool) : relaxes condition of needing 30 actual data points to fill in data
+			differ        (bool) : should the function differentiate between class labels when calculating stats
 			proteins       (arr) : which proteins to consider when creating vector representations of a patient
 	"""
 
 	scores=[]
 	medianScore = 0
 	rocs = {}
+	confusionMatrix = []
+	for i in range(0,2):
+		temp = []
+		for i in range(0,2):
+			temp.append(0.0)
+		confusionMatrix.append(temp)
+
+	testSplits = []
+	trainSplits = []
 	trainingTestingDataPoints = {}
+	featureImportances = {}
+	if proteins:
+		for i in range(len(proteins)):
+			featureImportances[i] = 0.0
+	else:
+		for i in range(len(PROTEINS)):
+			featureImportances[i] = 0.0
+	fillCounts = {}
+
 	for i in range(n):
-		data = createBinaryDataSet(classZeroData, classOneData, fill=fill, k=k, fix=fix, morePoints=morePoints, proteins=proteins)
-		X_train, X_test, y_train, y_test = train_test_split(data[0], data[1], test_size=testSize, random_state=1)
+		data = createBinaryDataSet(classZeroData, classOneData, fill=fill, k=k, fix=fix, morePoints=morePoints, differ=differ, proteins=proteins)
+		X_train, X_test, y_train, y_test = train_test_split(data[0], data[1], test_size=testSize, random_state=i%10)
 		clf.fit(X_train, y_train)
 		score = clf.score(X_test, y_test)
 		scores.append(score)
 		rocCurve = roc_curve(y_test, clf.predict_proba(X_test)[:,1])
 		rocs[score] = (rocCurve, auc(rocCurve[0], rocCurve[1]))
+
+		cm = confusion_matrix(y_test, clf.predict(X_test))
+		for i in range(len(cm)):
+			for j in range(len(cm[i])):
+				confusionMatrix[i][j] += cm[i][j]
+
+		if fill:
+			fillCounts[score] = data[2]
+
+		temp = clf.feature_importances_
+		for i in range(len(temp)):
+			featureImportances[i] += temp[i]
+
 		trainingTestingDataPoints[score] = (len(X_train), len(X_test))
-	
+		trainSplits.append((percentageOfClassInData(y_train,0), percentageOfClassInData(y_train,1)))
+		testSplits.append((percentageOfClassInData(y_test,0), percentageOfClassInData(y_test,1), format(score, '.3f')))
+	for key in featureImportances:
+		featureImportances[key] = format(featureImportances[key]/float(n), '.3f')
+
+	for i in range(len(confusionMatrix)):
+		for j in range(len(confusionMatrix[i])):
+			confusionMatrix[i][j] = confusionMatrix[i][j]/float(n)
+
 	scores.sort()
 
 	medianScore = scores[len(scores)/2]
-
 	print "Number of Training Data Points: " + str(trainingTestingDataPoints[medianScore][0])
 	print "Number of Testing Data Points: " + str(trainingTestingDataPoints[medianScore][1])
-	print "Accuracy scores: " + str(scores)
-	print "Mean Accuracy: " + str(computeMean(scores))
-	print "Median Accuracy: " + str(medianScore)
+	print "Mean Accuracy: " + str(format(computeMean(scores), '.3f'))
+	print "Stdev of Accuracy: " + str(format(computeStdev(scores), '.3f'))
+	print "Median Accuracy: " + str(format(medianScore, '.3f'))
+
+	if fill:
+		print "Counts for how many times each feature was filled in: " + str(fillCounts[medianScore])
+
+	if n <= 10:
+		print "Here were the percentages of control vs case in each test split and how well the classifier did: "
+		for i in range(n):
+			print "Train : " + str(trainSplits[i])
+			print "Test : " + str(testSplits[i])
+			print "\n"
+
+	print "Average Feature Importances: " + str(featureImportances)
 	print "ROC Graph for Median trial"
 	createROCGraph(rocs[medianScore][0][0], rocs[medianScore][0][1], rocs[medianScore][1])
+	return (scores, confusionMatrix)
