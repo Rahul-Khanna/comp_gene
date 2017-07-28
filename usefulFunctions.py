@@ -36,6 +36,15 @@ def computeMean(array):
 	return s/float(len(array))
 
 def computeStdev(array):
+	"""
+		Computes the stdev of an array of numbers
+
+		Params:
+			array (arr) : array of numbers
+
+		Returns:
+			float : stdev of array of numbers
+	"""
 
 	mean = computeMean(array)
 	s = 0
@@ -47,6 +56,16 @@ def computeStdev(array):
 	return s
 
 def computeWelchTest(array1, array2):
+	"""
+		Computes a Welch T - test between the means of two sequences of data
+
+		Params:
+			array1 (arr) : first sequence of data
+			array2 (arr) : second sequence of data
+
+		Returns;
+			float, float : t-stat, p-value
+	"""
 
 	return ttest_ind(array1, array2, equal_var=False)
 
@@ -193,13 +212,18 @@ def createPyGalLinePlotsForBinaryData(arrays, y_labels, x_labels, types, colors,
 	line_chart.render_to_file(filename=file_name)
 
 
-def plot_confusion_matrix(cm, classes,
-						  normalize=True,
-						  title='Confusion matrix',
-						  cmap=plt.cm.Blues):
+def plot_confusion_matrix(cm, classes, normalize=True, title='Confusion matrix', cmap=plt.cm.Blues):
 	"""
 	This function prints and plots the confusion matrix.
 	Normalization can be applied by setting `normalize=True`.
+	Taken from : http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html#sphx-glr-auto-examples-model-selection-plot-confusion-matrix-py
+
+	Params:
+		cm              (arr) : the confusion matrix to plot
+		classes         (arr) : the various class labels
+		normalize      (bool) : to normalize the probabilities or not
+		title           (str) : title of plot
+		cmap  (matplotlib.cm) : the color scheme to use for the confusion matrix
 	"""
 	plt.figure()
 	set_printoptions(precision=2)
