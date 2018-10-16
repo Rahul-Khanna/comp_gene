@@ -44,46 +44,47 @@ Here are the column values avaible in the dataset:
 
 ### Data Analysis:
 1. **There is a clear distinction between female and male patients:**
-    * Looking at "Protein\_Levels\_Male_Female" in the supporting material folder, you will see that for each protein level there is quite a difference between the two types of patients
+    * Looking at *"Protein\_Levels\_Male_Female"* in the [supporting material](https://github.com/Rahul-Khanna/comp_gene/tree/master/supporting_materia)folder, you will see that for each protein level there is quite a difference between the two types of patients
     * Any work done on analyzing protein levels in isolation should be done after sperating the patients into Male and Female datasets
     * Howerver, when looking at changes in protein levels over time, there is little difference between males and females
         - You can see this by looking at the time series plots (open in a browser) titled:
-            + "femaleData\_control.sick_age.svg"
-            + "maleData\_control.sick_age.svg"
+            + *"femaleData\_control.sick_age.svg"*
+            + *"maleData\_control.sick_age.svg"*
                 + These plots are interactive, so you can hide the many line plots present in the plot by clicking on the corresponding box associated with the plot you'd like to hide
                 + To compare the timeseries across genders, uncheck all patients of a particular "Enrollement Category" (affected vs control) in both graphs in order to compare for example: male control to female control
             + The shape of the plots per patient across the genders look relatively the same -- pretty flat, indicating litle change in protein levels for both male and female patients over time
         - This suggests that you woudln't necessarily have to split the dataset by gender if you were doing more timeseries / relative change analysis
     
 2. **Using visualization methods there are no clear differences between affected and control patients**
+    
     There exists a **[supporting\_marterial](https://github.com/Rahul-Khanna/comp_gene/tree/master/supporting_material)** folder with several visuals, please open that for references. To fully utilize the svg graphs, you will have to download the folder, and open the files in your browser.
 
-    * When not splitting the data in anyway, you can see this by looking at "Protein\_Levels\_Affected_Control"
+    * When not splitting the data in anyway, you can see this by looking at *"Protein\_Levels\_Affected_Control"*
         * Per protein level you can see little difference between the two sets of patients
     * Splitting the data by gender, this point is further shown in the following graphs:
         - Box Plots:
-            - "Male\_Protein\_Levels\_Affected_Control"
-            - "Female\_Protein\_Levels\_Affected_Control"
+            - *"Male\_Protein\_Levels\_Affected_Control"*
+            - *"Female\_Protein\_Levels\_Affected_Control"*
                 - Per protein level again no difference in protein levels between the two sets of patients
         - Timeseries:
-            - "femaleData\_control.sick\_age" in "timeSeries"
-            - "maleData\_control.sick\_age" in "timeSeries"
+            - *"femaleData\_control.sick\_age"* in *"timeSeries"*
+            - *"maleData\_control.sick\_age"* in *"timeSeries"*
                 - No clear seperatation between Red and Green plots
                 - No difference between the delta between readings for affected vs control patients
     * Splitting by age:
         - From looking at the data I decided the below would be good age interval to bucket patients by. My objective was to detect bands of users by looking at the spread of ages... this might not be the best groupings in terms of biology though:
             + Young: age < 50
-                * "youngData\_control.sick\_age" in "timeSeries"
+                * *"youngData\_control.sick\_age"* in *"timeSeries"*
             + Middle 1: 50 <= age < 60
-                * "middle\_1\_Data_control.sick\_age" in "timeSeries"
+                * *"middle\_1\_Data_control.sick\_age"* in *"timeSeries"*
             + Middle 2: 60 <= age < 65
-                * "middle\_2\_Data_control.sick\_age" in "timeSeries"
+                * *"middle\_2\_Data_control.sick\_age"* in *"timeSeries"*
             + Middle 3: 65 <= age < 70
-                * "middle\_3\_Data_control.sick\_age" in "timeSeries"
+                * *"middle\_3\_Data_control.sick\_age"* in *"timeSeries"*
             + Old: age >= 70
-                * "old\_age\_Data\_control.sick\_age" in "timeSeries"
+                * *"old\_age\_Data\_control.sick\_age"* in *"timeSeries"*
         - Again no real difference noticed between affected and control patients
-        - Note: The "timeSeries" plot labels are sorted by Gender and then Age. This allows for quick deselecting of lines to look at differences between females or males for each age bucket. This also allows the observer to play around with age bucketing within the age intervals defined above.
+        - Note: The *"timeSeries"* plot labels are sorted by Gender and then Age. This allows for quick deselecting of lines to look at differences between females or males for each age bucket. This also allows the observer to play around with age bucketing within the age intervals defined above.
     * Splitting by age and then gender:
         - Looking at the same graphs used to look at "splitting by age", you can deselect a certain gender easily enough to observe no difference here
     * Splitting gender and then age:
@@ -255,11 +256,11 @@ After looking at this data in three different ways, I conclude that the followin
 * Gender
     * clear distinction between protein levels for Male vs Female patients
     * regression analysis supported this as well
-    * useful feature to pair with other ones when trying to classify patients.
+    * very useful feature to pair with other ones when trying to classify patients
 
 * Age 
     * often a signficant variable in the regression experiments
-    * strong perfomance when used alone in classification, and a good amount of robustness (which indicates resistance to overfitting)
+    * strong perfomance when used alone in classification, and the classification models had a good amount of robustness (which indicates resistance to overfitting)
 
 * Protein_V4
     * the strongest feature to use in the sole classification tasks
@@ -270,7 +271,7 @@ Cases can also be made for the following variables to be captured, in order of i
 1. V8 -- Due to Regression Results or V6 -- Due to Classification Results
 2. V10 -- Due to Regression or BL - Due to Classification Results
 
-I might be missing some biology factor her, but I don't thin PD Duration is needed, both from regression results and the fact that its not captured for control patients.
+I might be missing some biology factor here, but I don't think PD Duration is needed, both from regression results and the fact that its not captured for control patients.
 
 
 
