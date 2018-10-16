@@ -56,7 +56,7 @@ Here are the column values avaible in the dataset:
         - This suggests that you woudln't necessarily have to split the dataset by gender if you were doing more timeseries / relative change analysis
     
 2. **Using visualization methods there are no clear differences between affected and control patients**
-    There exists a **supporting\_marterial** folder with several visuals, please open that up for references.
+    There exists a **[supporting\_marterial](https://github.com/Rahul-Khanna/comp_gene/tree/master/supporting_material)** folder with several visuals, please open that for references. To fully utilize the svg graphs, you will have to download the folder, and open the files in your browser.
 
     * When not splitting the data in anyway, you can see this by looking at "Protein\_Levels\_Affected_Control"
         * Per protein level you can see little difference between the two sets of patients
@@ -206,7 +206,7 @@ Here are the column values avaible in the dataset:
             * As I was looking to uncover what variables should be looked into for understanding patients with Parkinson's Disease, I only looked to fix the `type` imbalance in order to allow myself to do the classification analysis
             * I fixed the `type` imbalance problem by using the [following](http://scikit-learn.org/stable/modules/generated/sklearn.utils.resample.html)
 
-        3. My dataprep process can be found [here](fill in), but it essentially amounts to:
+        3. My dataprep process can be found [here](https://github.com/Rahul-Khanna/comp_gene/blob/master/Cleaned_Up_Classifier_Work.ipynb), but it essentially amounts to:
             1. Make `type` and `gender` binary variables
             2. Filter out all rows where fat finger errors exist
                 * This steps also removes all rows with missing values for Protein\_BL, V4, V6, V8
@@ -249,7 +249,7 @@ Here are the column values avaible in the dataset:
             - Protein_V8 did not pair well.
             - Models with Protein_V8 did decently on both a performance and robustness basis
 
-5. **Conclusion**
+### Conclusion
 After looking at this data in three different ways, I conclude that the following variables are the most important to capture when trying to understand patients with and without Parkinson's Disease: 
 
 * Gender
