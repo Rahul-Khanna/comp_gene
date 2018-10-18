@@ -57,7 +57,7 @@ Here are the column values available in the dataset:
     
 2. **Using visualization methods there are no clear differences between case and control patients**
     
-    There exists a **[supporting\_marterial](https://github.com/Rahul-Khanna/comp_gene/tree/master/supporting_material)** folder with several visuals, please open that for references. To fully utilize the svg graphs, you will have to download the folder, and open the files in your browser.
+    There exists a **[supporting\_marterials](https://github.com/Rahul-Khanna/comp_gene/tree/master/supporting_materials)** folder with several visuals, please open that for references. To fully utilize the svg graphs, you will have to download the folder, and open the files in your browser.
 
     * When not splitting the data in anyway, you can see this by looking at *"Protein\_Levels\_Affected_Control"*
         * Per protein level you can see little difference between the two sets of patients
