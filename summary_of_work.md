@@ -91,7 +91,7 @@ Here are the column values available in the dataset:
         - Looking at the time series graphs used in "Splitting the data by gender" you can bucket users by age groups easily enough, as the labels are sorted by age youngest to oldest. Again no difference between control vs case sets of patients
 
 3. **However, when running various regression analyses, some statistical significant relationships are revealed.** 
-    * While some of these relationships are significant, they are not strong predictors. The various regressions (experiments) can be found [here](https://github.com/Rahul-Khanna/comp_gene/blob/master/Regression.ipynb)
+    * While some of these relationships are significant, they are not strong predictors. The various regressions (experiments) can be found [here](https://github.com/Rahul-Khanna/comp_gene/blob/master/regression_experiments.ipynb)
         - To navigate between the different experiments, search for "&&&&" on the page, as this symbol signifies the start of a new experiment.
         - [The package I used to run the regressions](https://www.statsmodels.org/stable/index.html)
     * A quick synopsis of the results can be found below the descriptions of each experiment type. I would recommend glancing at the description of each experiment (the fist point under each header below) in order to fully understand the synopsis.
