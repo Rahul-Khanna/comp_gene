@@ -137,7 +137,7 @@ Here are the column values available in the dataset:
 4. **Finally I did some classification analysis in order to uncover further proof that certain variables should be collected for further analysis.**
     * **Important notes**
         1. The goal here is to classify patients as case or control by different combinations of Gender, Age, Protein_BL, V4, V6, V8 using a Random Forest Model. I want to see what combinations would lead to better than random performance, as that would suggest there are relationships between `type` and the variables mentioned above. I start of with using each feature independently and noting performance. Next I hold each feature fixed and cycle through the remaining features to understand the best pairing for each feature. I continue this as many times as needed -- adding the best option to the current set of features, think Viterbi -- in order to gain a grasp of the relationships present.
-            * I have already preformed analysis in order to determine that a Random Forest Model was the best classifier to use, results can be found [here](https://github.com/Rahul-Khanna/comp_gene/blob/master/presentations/Testing%20Various%20Classifiers%20Out.pdf)
+            * I have already preformed analysis in order to determine that a Random Forest Model was the best classifier to use, results can be found [here](https://github.com/Rahul-Khanna/comp_gene/blob/master/testing_various_classifiers.ipynb.ipynb)
 
         2. There exists data imbalance in two different ways: `gender` and `type`
             * As I was looking to uncover what variables should be looked into for understanding patients with Parkinson's Disease, I only looked to fix the `type` imbalance in order to allow myself to do the classification analysis
