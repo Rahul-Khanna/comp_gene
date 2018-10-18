@@ -44,16 +44,16 @@ Here are the column values available in the dataset:
 
 ### Data Analysis:
 1. **There is a clear distinction between female and male patients:**
-    * Looking at *"Protein\_Levels\_Male_Female"* in the [supporting materiall](https://github.com/Rahul-Khanna/comp_gene/tree/master/supporting_materia) folder, you will see that for each protein level there is quite a difference between the two types of patients
+    * Looking at *"Protein\_Levels\_Male_Female"* in the [supporting materials](https://github.com/Rahul-Khanna/comp_gene/tree/master/supporting_materials) folder, you will see that for each protein level there is quite a difference between the two types of patients
     * Any work done on analyzing protein levels in isolation should be done after separating the patients into Male and Female datasets
     * However, when looking at changes in protein levels over time, there is little difference between males and females
         - You can see this by looking at the time series plots (open in a browser) titled:
             + *"femaleData\_control.sick_age.svg"*
             + *"maleData\_control.sick_age.svg"*
                 + These plots are interactive, so you can hide the many line plots present in the plot by clicking on the corresponding box associated with the plot you'd like to hide
-                + To compare the timeseries across genders, un-check all patients of a particular "Enrollement Category" (affected vs control) in both graphs in order to compare for example: male control to female control
+                + To compare the time series across genders, un-check all patients of a particular "Enrollement Category" (affected vs control) in both graphs in order to compare for example: male control to female control
             + The shape of the plots per patient across the genders look relatively the same -- pretty flat, indicating little change in protein levels for both male and female patients over time
-        - This suggests that you wouldn't necessarily have to split the dataset by gender if you were doing more timeseries / relative change analysis
+        - This suggests that you wouldn't necessarily have to split the dataset by gender if you were doing more time series / relative change analysis
     
 2. **Using visualization methods there are no clear differences between affected and control patients**
     
@@ -67,28 +67,28 @@ Here are the column values available in the dataset:
             - *"Female\_Protein\_Levels\_Affected_Control"*
                 - Per protein level again no difference in protein levels between the two sets of patients
         - Timeseries:
-            - *"femaleData\_control.sick\_age"* in *"timeSeries"*
-            - *"maleData\_control.sick\_age"* in *"timeSeries"*
+            - *"femaleData\_control.sick\_age"* in *"time_series"*
+            - *"maleData\_control.sick\_age"* in *"time_series"*
                 - No clear separation between Red and Green plots
                 - No difference between the delta between readings for affected vs control patients
     * Splitting by age:
         - From looking at the data I decided the below would be good age interval to bucket patients by. My objective was to detect bands of users by looking at the spread of ages... this might not be the best groupings in terms of biology though:
             + Young: age < 50
-                * *"youngData\_control.sick\_age"* in *"timeSeries"*
+                * *"youngData\_control.sick\_age"* in *"time_series"*
             + Middle 1: 50 <= age < 60
-                * *"middle\_1\_Data_control.sick\_age"* in *"timeSeries"*
+                * *"middle\_1\_Data_control.sick\_age"* in *"time_series"*
             + Middle 2: 60 <= age < 65
-                * *"middle\_2\_Data_control.sick\_age"* in *"timeSeries"*
+                * *"middle\_2\_Data_control.sick\_age"* in *"time_series"*
             + Middle 3: 65 <= age < 70
-                * *"middle\_3\_Data_control.sick\_age"* in *"timeSeries"*
+                * *"middle\_3\_Data_control.sick\_age"* in *"time_series"*
             + Old: age >= 70
-                * *"old\_age\_Data\_control.sick\_age"* in *"timeSeries"*
+                * *"old\_age\_Data\_control.sick\_age"* in *"time_series"*
         - Again no real difference noticed between affected and control patients
-        - Note: The *"timeSeries"* plot labels are sorted by Gender and then Age. This allows for quick deselecting of lines to look at differences between females or males for each age bucket. This also allows the observer to play around with age bucketing within the age intervals defined above.
+        - Note: The *"time_series"* plot labels are sorted by Gender and then Age. This allows for quick deselecting of lines to look at differences between females or males for each age bucket. This also allows the observer to play around with age bucketing within the age intervals defined above.
     * Splitting by age and then gender:
         - Looking at the same graphs used to look at "splitting by age", you can deselect a certain gender easily enough to observe no difference here
     * Splitting gender and then age:
-        - Looking at the timeseries graphs used in "Splitting the data by gender" you can bucket users by age groups easily enough, as the labels are sorted by age youngest to oldest. Again no difference between control vs affected sets of patients
+        - Looking at the time series graphs used in "Splitting the data by gender" you can bucket users by age groups easily enough, as the labels are sorted by age youngest to oldest. Again no difference between control vs affected sets of patients
 
 3. **However, when running various regression analyses, some statistical significant relationships are revealed.** 
     * While some of these relationships are significant, they are not strong predictors. The various regressions (experiments) can be found [here](https://github.com/Rahul-Khanna/comp_gene/blob/master/Regression.ipynb)
@@ -230,11 +230,11 @@ There weren't enough data points to determine if Protein_V12 has a significant r
             * in line with what we were seeing at the data visualization analysis, gender clearly has a role to play in understanding protein levels
         + P-value of `months_from_eval` was significant at the 0.05 level for 2 out 8 experiments and at the 0.1 level at 5 out of 8 experiments
             * the time that the reading took place is not always too important
-            * this is supported by the timeserie plots generated, as for the various cohorts of patients the plots stay relatively stable... there is no noticeable downward or upward trend over time
+            * this is supported by the time serie plots generated, as for the various cohorts of patients the plots stay relatively stable... there is no noticeable downward or upward trend over time
 
 * **Regression Experiment 2**
     + The main things learned from this round of experiments are:
-        + PD Duration almost always has a highly un-significant (P-value > 0.5) relationship with protein levels
+        + PD Duration almost always has a highly insignificant (P-value > 0.5) relationship with protein levels
         + age and gender relationship with protein levels stays consistent with the experiments of Experiment Type 1
         + this round of experiments resulted in even worse Adjusted R-Squares
     * Given the results of these 8 experiments, I think we can safely assume that given this dataset PD Duration isn't statistically tied to protein levels. This isn't a problem though, as when trying to understand which patients are affected by Parkinson's Disease, no control patient has a value filled out for this column.
