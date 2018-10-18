@@ -1,4 +1,4 @@
-## Summary of work done while analyzing data concerning protein readings for both affected and control patients in the hope of understanding predictors of Parkinson's Disease
+## Summary of work done while analyzing data concerning protein readings for both case and control patients in the hope of understanding predictors of Parkinson's Disease
 
 ### Description of Data:
 Here are the column values available in the dataset:
@@ -15,7 +15,7 @@ Here are the column values available in the dataset:
 
 ### Notes on Data and Data Prep:
 1. *If Enrollment Category is 1 - PD Duration is null*
-    * In understanding differences between affected and control patients PD Duration cannot be used, as there are no values for control patients
+    * In understanding differences between case and control patients PD Duration cannot be used, as there are no values for control patients
 
 2. *There exist many fat-finger mistakes in the filling out of protein levels for a patient*
     * You will see many values below 1 as well as values that are lower and higher by various orders of magnitude than the expected range of values. I tried to account for this by simple heuristics:
@@ -31,7 +31,7 @@ Here are the column values available in the dataset:
 3. *There exists imbalances in the data in two different ways:*
     * Double the number of males than females
         - To make matters worse the male data is better filled out than female data (fewer fat finger entries and more patients with consecutive protein readings filled out)
-    * Double the number of affected patients than control patients
+    * Double the number of case patients than control patients
     * Using something like SMOTE for up-sampling purposes would have been really cool, just never got around to doing it.
         - You can read more about techniques to deal with imbalanced data [here](https://imbalanced-learn.readthedocs.io/en/stable/)
 
@@ -51,11 +51,11 @@ Here are the column values available in the dataset:
             + *"femaleData\_control.sick_age.svg"*
             + *"maleData\_control.sick_age.svg"*
                 + These plots are interactive, so you can hide the many line plots present in the plot by clicking on the corresponding box associated with the plot you'd like to hide
-                + To compare the time series across genders, un-check all patients of a particular "Enrollement Category" (affected vs control) in both graphs in order to compare for example: male control to female control
+                + To compare the time series across genders, un-check all patients of a particular "Enrollement Category" (sick/case vs control) in both graphs in order to compare for example: male control to female control
             + The shape of the plots per patient across the genders look relatively the same -- pretty flat, indicating little change in protein levels for both male and female patients over time
         - This suggests that you wouldn't necessarily have to split the dataset by gender if you were doing more time series / relative change analysis
     
-2. **Using visualization methods there are no clear differences between affected and control patients**
+2. **Using visualization methods there are no clear differences between case and control patients**
     
     There exists a **[supporting\_marterial](https://github.com/Rahul-Khanna/comp_gene/tree/master/supporting_material)** folder with several visuals, please open that for references. To fully utilize the svg graphs, you will have to download the folder, and open the files in your browser.
 
@@ -66,11 +66,11 @@ Here are the column values available in the dataset:
             - *"Male\_Protein\_Levels\_Affected_Control"*
             - *"Female\_Protein\_Levels\_Affected_Control"*
                 - Per protein level again no difference in protein levels between the two sets of patients
-        - Timeseries:
+        - Time Series:
             - *"femaleData\_control.sick\_age"* in *"time_series"*
             - *"maleData\_control.sick\_age"* in *"time_series"*
                 - No clear separation between Red and Green plots
-                - No difference between the delta between readings for affected vs control patients
+                - No difference between the delta between readings for case vs control patients
     * Splitting by age:
         - From looking at the data I decided the below would be good age interval to bucket patients by. My objective was to detect bands of users by looking at the spread of ages... this might not be the best groupings in terms of biology though:
             + Young: age < 50
@@ -83,12 +83,12 @@ Here are the column values available in the dataset:
                 * *"middle\_3\_Data_control.sick\_age"* in *"time_series"*
             + Old: age >= 70
                 * *"old\_age\_Data\_control.sick\_age"* in *"time_series"*
-        - Again no real difference noticed between affected and control patients
+        - Again no real difference noticed between case and control patients
         - Note: The *"time_series"* plot labels are sorted by Gender and then Age. This allows for quick deselecting of lines to look at differences between females or males for each age bucket. This also allows the observer to play around with age bucketing within the age intervals defined above.
     * Splitting by age and then gender:
         - Looking at the same graphs used to look at "splitting by age", you can deselect a certain gender easily enough to observe no difference here
     * Splitting gender and then age:
-        - Looking at the time series graphs used in "Splitting the data by gender" you can bucket users by age groups easily enough, as the labels are sorted by age youngest to oldest. Again no difference between control vs affected sets of patients
+        - Looking at the time series graphs used in "Splitting the data by gender" you can bucket users by age groups easily enough, as the labels are sorted by age youngest to oldest. Again no difference between control vs case sets of patients
 
 3. **However, when running various regression analyses, some statistical significant relationships are revealed.** 
     * While some of these relationships are significant, they are not strong predictors. The various regressions (experiments) can be found [here](https://github.com/Rahul-Khanna/comp_gene/blob/master/Regression.ipynb)
@@ -109,7 +109,7 @@ Here are the column values available in the dataset:
 
     * **Experiment Type 2**:
         - Description:
-            + Again flattening protein levels into one column and introducing the `months_from_eval` column, I wanted to look at the power of PD Duration, `months_from_screening`, in predicting protein levels. Remember that no control patient has a PD Duration, so this analysis is only done on affected patients.
+            + Again flattening protein levels into one column and introducing the `months_from_eval` column, I wanted to look at the power of PD Duration, `months_from_screening`, in predicting protein levels. Remember that no control patient has a PD Duration, so this analysis is only done on case patients.
             + I again split data up the same way I did for Experiment Type 1
     
     * **Experiment Type 3**:
@@ -136,8 +136,8 @@ Here are the column values available in the dataset:
 
 4. **Finally I did some classification analysis in order to uncover further proof that certain variables should be collected for further analysis.**
     * **Important notes**
-        1. The goal here is to classify patients as affected or control by different combinations of Gender, Age, Protein_BL, V4, V6, V8 using a Random Forest Model. I want to see what combinations would lead to better than random performance, as that would suggest there are relationships between `type` and the variables mentioned above. I start of with using each feature independently and noting performance. Next I hold each feature fixed and cycle through the remaining features to understand the best pairing for each feature. I continue this as many times as needed -- adding the best option to the current set of features, think Viterbi -- in order to gain a grasp of the relationships present.
-            * I have already preformed analysis in order to determine that a Random Forest Model was the best classifier to use, results can be found [here](fill-in). 
+        1. The goal here is to classify patients as case or control by different combinations of Gender, Age, Protein_BL, V4, V6, V8 using a Random Forest Model. I want to see what combinations would lead to better than random performance, as that would suggest there are relationships between `type` and the variables mentioned above. I start of with using each feature independently and noting performance. Next I hold each feature fixed and cycle through the remaining features to understand the best pairing for each feature. I continue this as many times as needed -- adding the best option to the current set of features, think Viterbi -- in order to gain a grasp of the relationships present.
+            * I have already preformed analysis in order to determine that a Random Forest Model was the best classifier to use, results can be found [here](https://github.com/Rahul-Khanna/comp_gene/blob/master/presentations/Testing%20Various%20Classifiers%20Out.pdf)
 
         2. There exists data imbalance in two different ways: `gender` and `type`
             * As I was looking to uncover what variables should be looked into for understanding patients with Parkinson's Disease, I only looked to fix the `type` imbalance in order to allow myself to do the classification analysis
@@ -187,12 +187,12 @@ Here are the column values available in the dataset:
             - Models with Protein_V8 did decently on both a performance and robustness basis
 
 ### Conclusion
-After looking at this data in three different ways, I can safely conclude that using these datapoints alone are nowhere near enough to be able to classify if a patient is part of the control or affected groups. However, I can conclude that the following variables are the most important to capture when trying to understand patients with and without Parkinson's Disease:
+After looking at this data in three different ways, I can safely conclude that using these datapoints alone are nowhere near enough to be able to classify if a patient is part of the control or case groups. However, I can conclude that the following variables are the most important to capture when trying to understand patients with and without Parkinson's Disease:
 
 * Gender
     * from looking at the boxplots there is a clear distinction between protein levels for Male vs Female patients, so any analysis done on protein levels should include the gender of the patient for context
     * regression analysis supported the visuals, as gender was constantly a significant independent when trying to predict protein levels for a patient
-    * gender was a very useful feature to pair with other features when trying to classify patients as being control or affected
+    * gender was a very useful feature to pair with other features when trying to classify patients as being control or case
 
 * Age 
     * was often a significant independent variable in the regression experiments
