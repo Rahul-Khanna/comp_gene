@@ -89,7 +89,7 @@ Data Exploration of protein levels for case vs control patients
     - seventh pass looking through patient data
     - gender as a feature had very low feature importance as per scikit learn's feture\_importance\_ function (which is actually not to be fully trusted)
     - this goes against case built up by visuals and regression analysis that suggests gender is important
-    - doing another type of random forest analysis in `leaned\_up\_classifier\_work.ipynb`, actually shows gender can be quite useful
+    - doing another type of random forest analysis in `cleaned_up_classifier_work.ipynb`, actually shows gender can be quite useful
     - some thoughts on this can be found in the powerpoint just above
 
 ### Other Files
