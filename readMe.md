@@ -23,7 +23,7 @@ Data Exploration of protein levels for case vs control patients
         + Conclusion
 
 * **supporting_materials**
-    - Folder containing viuals referenced in `summary\_of\_work.md`
+    - Folder containing viuals referenced in `summary_of_work.md`
     - important box plots and time serie graphs that are used to show differences between male and female patients, as well as case vs control patients
 
 * **data_exploration.ipynb**
