@@ -13,6 +13,8 @@ Data Exploration of protein levels for case vs control patients
 8. Navigate back to cloned repo and run `jupyter notebook`
 9. Investigate
 
+Note: The actual datafile is not checked into the repo, email rk2658@columbia.edu if you are interested
+
 ### Important Research Files:
 * **summary\_of\_work.md**
     - A summary of all the research work done in the effort to determine which variables could lead to a better understanding of patients with Parkinson's Disease.
