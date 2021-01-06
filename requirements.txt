@@ -7,7 +7,7 @@ backports.ssl-match-hostname==3.5.0.1
 bleach==2.0.0
 blessings==1.6
 cairocffi==0.7.2
-CairoSVG==1.0.20
+CairoSVG==2.5.1
 certifi==2017.4.17
 cffi==1.6.0
 chardet==3.0.4
