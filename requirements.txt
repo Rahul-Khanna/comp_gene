@@ -59,7 +59,7 @@ prompt-toolkit==1.0.14
 ptyprocess==0.5.1
 pycparser==2.14
 pygal==2.3.0
-Pygments==2.2.0
+Pygments==2.7.4
 pygrok==0.7.1
 pyparsing==2.2.0
 python-dateutil==2.5.3
